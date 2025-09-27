@@ -1,5 +1,5 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { BrainCircuit, Binary, TreePine, Box, List, ArrowLeftRight, Calculator, MessageSquare, Hash, ArrowRightLeft } from "lucide-react"
+import { BrainCircuit, Binary, TreePine, Box, List, ArrowLeftRight, Calculator, MessageSquare, Hash, ArrowRightLeft, Crown } from "lucide-react"
 import Link from "next/link"
 
 const sections = {
@@ -40,6 +40,12 @@ const sections = {
       href: "/visualizer/heap",
       icon: Box,
     },
+    {
+      name: "N-Queens",
+      description: "Classic backtracking challenge. Place N queens so none attack each other.",
+      href: "/visualizer/n-queens",
+      icon: Crown,
+    },
   ],
   applications: [
     {
@@ -71,6 +77,12 @@ const sections = {
       description: "Visualize Dijkstra's algorithm to find the shortest path in a graph.",
       href: "/visualizer/dijkstra",
       icon: ArrowRightLeft,
+    },
+    {
+      name: "N-Queens Problem",
+      description: "Solve the classic N-Queens problem using backtracking. Watch the algorithm place queens on a chessboard.",
+      href: "/visualizer/n-queens",
+      icon: Crown,
     },
   ]
 }

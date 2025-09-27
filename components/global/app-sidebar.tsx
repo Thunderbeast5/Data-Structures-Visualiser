@@ -1,6 +1,6 @@
 "use client"
 
-import { Binary, Home, Database, BrainCircuit, TreePine, List, SquareStack, SquareChevronLeft, Equal, MessageSquare, X, Hash, ArrowRightLeft } from "lucide-react"
+import { Binary, Home, Database, BrainCircuit, TreePine, List, SquareStack, SquareChevronLeft, Equal, MessageSquare, X, Hash, ArrowRightLeft, Crown } from "lucide-react"
 import {
   Sidebar,
   SidebarContent,
@@ -94,6 +94,12 @@ const applications = [
     url: "/visualizer/dijkstra",
     icon: ArrowRightLeft,
     description: "Dijkstra's algorithm is a graph search algorithm that finds the shortest path between nodes in a graph.",
+  },
+  {
+    name: "N-Queens Problem",
+    url: "/visualizer/n-queens",
+    icon: Crown,
+    description: "Place N queens on an N×N chessboard so that no two queens attack each other.",
   },
 ]
 
