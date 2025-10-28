@@ -72,6 +72,11 @@ const featureList: FeatureProps[] = [
     url: "/visualizer/heap"
   },
   {
+    title: "Backtracking",
+    description: "Interactive backtracking visualizer with recursion stack, branching tree, and comprehensive educational controls.",
+    url: "/visualizer/backtracking"
+  },
+  {
     title: "Infix to Postfix",
     description: "Learn how to convert infix expressions to postfix notation using a stack.",
     url: "/visualizer/stack-applications"

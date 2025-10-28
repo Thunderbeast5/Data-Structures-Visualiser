@@ -1,10 +1,23 @@
 "use client"
 
 import { BinaryTreeVisualizer } from "@/components/visualizer/binary-tree/binary-tree-visualizer"
-// import Content from "./binary-tree.mdx"
+import { MarkdownContent } from "@/components/shared/markdown-content"
+import { getDataStructureContent } from "@/lib/content-utils"
+import { useEffect, useState } from "react"
 
 function Content() {
-  return <div className="text-center text-2xl font-bold">To be implemented</div>
+  const [content, setContent] = useState<string>("Loading...")
+
+  useEffect(() => {
+    const loadContent = async () => {
+      const markdownContent = await getDataStructureContent('binary-tree')
+      setContent(markdownContent)
+    }
+
+    loadContent()
+  }, [])
+
+  return <MarkdownContent content={content} />
 }
 
 export default function BinaryTreePage() {

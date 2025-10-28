@@ -1,5 +1,5 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { BrainCircuit, Binary, TreePine, Box, List, ArrowLeftRight, Calculator, MessageSquare, Hash, ArrowRightLeft, Crown } from "lucide-react"
+import { BrainCircuit, Binary, TreePine, Box, List, ArrowLeftRight, Calculator, MessageSquare, Hash, ArrowRightLeft, Crown, GitBranch } from "lucide-react"
 import Link from "next/link"
 
 const sections = {
@@ -41,10 +41,10 @@ const sections = {
       icon: Box,
     },
     {
-      name: "N-Queens",
-      description: "Classic backtracking challenge. Place N queens so none attack each other.",
-      href: "/visualizer/n-queens",
-      icon: Crown,
+      name: "Backtracking",
+      description: "Interactive backtracking visualizer with recursion stack, branching tree, conflict highlighting, and comprehensive educational controls.",
+      href: "/visualizer/backtracking",
+      icon: GitBranch,
     },
   ],
   applications: [

@@ -1,12 +1,25 @@
 "use client"
 
 import { AVLTreeVisualizer } from "@/components/visualizer/avl-tree/avl-tree-visualizer"
-// import Content from "./avl-tree.mdx"
+import { MarkdownContent } from "@/components/shared/markdown-content"
+import { getDataStructureContent } from "@/lib/content-utils"
+import { useEffect, useState } from "react"
 
 function Content() {
-  return <div className="text-center text-2xl font-bold">To be implemented</div>
+  const [content, setContent] = useState<string>("Loading...")
+
+  useEffect(() => {
+    const loadContent = async () => {
+      const markdownContent = await getDataStructureContent('avl-tree')
+      setContent(markdownContent)
+    }
+
+    loadContent()
+  }, [])
+
+  return <MarkdownContent content={content} />
 }
 
 export default function AVLTreePage() {
   return <AVLTreeVisualizer content={<Content />} />
-} 
+}

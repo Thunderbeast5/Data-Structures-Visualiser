@@ -1,5 +1,3 @@
-import { useId } from "react";
-
 import { cn } from "@/lib/utils";
 
 interface DotPatternProps {
@@ -11,6 +9,7 @@ interface DotPatternProps {
   cy?: any;
   cr?: any;
   className?: string;
+  id?: string;
   [key: string]: any;
 }
 export function DotPattern({
@@ -22,9 +21,11 @@ export function DotPattern({
   cy = 1,
   cr = 1,
   className,
+  id: customId,
   ...props
 }: DotPatternProps) {
-  const id = useId();
+  // Use a deterministic ID based on props to prevent hydration mismatches
+  const id = customId || `dot-pattern-${width}-${height}-${cx}-${cy}-${cr}`;
 
   return (
     <svg
