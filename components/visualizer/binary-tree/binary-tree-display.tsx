@@ -28,7 +28,13 @@ export function BinaryTreeDisplay({ tree, highlightedNodes }: BinaryTreeDisplayP
   const [nodes, setNodes, onNodesChange] = useNodesState([])
   const [edges, setEdges, onEdgesChange] = useEdgesState([])
   const [reactFlowInstance, setReactFlowInstance] = useState<ReactFlowInstance | null>(null)
+  const [mounted, setMounted] = useState(false)
   const { theme } = useTheme()
+
+  // Prevent hydration mismatch by only rendering after mount
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   // Handle flow instance initialization
   const onInit = useCallback((flowInstance: ReactFlowInstance) => {
@@ -49,7 +55,7 @@ export function BinaryTreeDisplay({ tree, highlightedNodes }: BinaryTreeDisplayP
   }, [reactFlowInstance])
 
   useEffect(() => {
-    if (!tree) {
+    if (!tree || !mounted) {
       setNodes([])
       setEdges([])
       return
@@ -87,7 +93,7 @@ export function BinaryTreeDisplay({ tree, highlightedNodes }: BinaryTreeDisplayP
           target: node.id,
           type: 'default',
           style: { 
-            stroke: theme === 'dark' ? '#ffffff' : '#000000',
+            stroke: mounted ? (theme === 'dark' ? '#ffffff' : '#000000') : '#000000',
             strokeWidth: 1.5,
             opacity: 0.5,
           },
@@ -120,7 +126,18 @@ export function BinaryTreeDisplay({ tree, highlightedNodes }: BinaryTreeDisplayP
     setNodes(newNodes)
     setEdges(newEdges)
     fitView()
-  }, [tree, highlightedNodes, setNodes, setEdges, fitView])
+  }, [tree, highlightedNodes, setNodes, setEdges, fitView, theme, mounted])
+
+  // Don't render until mounted to prevent hydration mismatch
+  if (!mounted) {
+    return (
+      <div className="w-full h-[600px] bg-background rounded-lg overflow-hidden">
+        <div className="flex items-center justify-center h-full text-muted-foreground">
+          Loading visualization...
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="w-full h-[600px] bg-background rounded-lg overflow-hidden">
@@ -143,7 +160,7 @@ export function BinaryTreeDisplay({ tree, highlightedNodes }: BinaryTreeDisplayP
         className="transition-all duration-300" 
       >
         <Background 
-          color={theme === 'dark' ? '#ffffff' : '#000000'} 
+          color={mounted ? (theme === 'dark' ? '#ffffff' : '#000000') : '#000000'} 
           gap={12} 
           size={1} 
         />  

@@ -44,6 +44,12 @@ const features = [
     url: "/visualizer/heap"
   },
   {
+    title: "Backtracking",
+    description: "Interactive backtracking visualizer with recursion stack, branching tree, conflict highlighting, and comprehensive educational controls",
+    image: "/ds-backtracking.png",
+    url: "/visualizer/backtracking"
+  },
+  {
     title: "Infix to Postfix Conversion",
     description: "Visualize the conversion of infix expressions to postfix notation using a stack.",
     image: "/ds-infix-to-postfix.png",

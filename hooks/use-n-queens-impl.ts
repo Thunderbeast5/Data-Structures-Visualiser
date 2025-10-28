@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useCallback, useEffect } from "react"
+import { useState, useCallback, useEffect, useRef } from "react"
 import { Position, SolutionStep, NQueensState, AnimationSpeed, ANIMATION_SPEEDS } from "@/components/visualizer/n-queens/types"
 
 export function useNQueens(boardSize: number = 8) {
@@ -16,6 +16,8 @@ export function useNQueens(boardSize: number = 8) {
   const [currentStep, setCurrentStep] = useState(-1)
   const [isAnimating, setIsAnimating] = useState(false)
   const [isPaused, setIsPaused] = useState(false)
+  const isPausedRef = useRef(false)
+  const animationCancelRef = useRef<(() => void) | null>(null)
   const [animationSpeed, setAnimationSpeed] = useState<AnimationSpeed>('medium')
   const [allSolutions, setAllSolutions] = useState<Position[][]>([])
   const [currentSolutionIndex, setCurrentSolutionIndex] = useState(0)
@@ -153,38 +155,85 @@ export function useNQueens(boardSize: number = 8) {
     setAllSolutions([])
     setCurrentSolutionIndex(0)
 
+    // Reset the board state to initial state
+    setState({
+      board: newBoard,
+      queens: [],
+      currentRow: 0,
+      isComplete: false,
+      solutionCount: 0,
+    })
+
     solveNQueensRecursive(newBoard, 0, boardSize, solutions, [], newSteps)
 
     setSteps(newSteps)
     setAllSolutions(solutions)
 
-    for (let i = 0; i < newSteps.length; i++) {
-      while (isPaused) {
+    // Animation loop with proper pause handling using refs
+    let animationCancelled = false
+    isPausedRef.current = false
+    
+    const animate = async () => {
+      for (let i = 0; i < newSteps.length; i++) {
+        // Check if animation was cancelled
+        if (animationCancelled) break
+        
+        // Wait for pause to be released using ref
+        while (isPausedRef.current && !animationCancelled) {
+          // eslint-disable-next-line no-await-in-loop
+          await new Promise(resolve => setTimeout(resolve, 100))
+        }
+        
+        if (animationCancelled) break
+        
         // eslint-disable-next-line no-await-in-loop
-        await new Promise(resolve => setTimeout(resolve, 100))
+        await new Promise(resolve => setTimeout(resolve, ANIMATION_SPEEDS[animationSpeed]))
+        
+        if (animationCancelled) break
+
+        setCurrentStep(i)
+        setState({
+          board: newSteps[i].board,
+          queens: newSteps[i].queens,
+          currentRow: newSteps[i].row,
+          isComplete: newSteps[i].action === 'complete',
+          solutionCount: solutions.length,
+        })
+
+        if (!findAllSolutions && newSteps[i].action === 'complete') {
+          break
+        }
       }
-      // eslint-disable-next-line no-await-in-loop
-      await new Promise(resolve => setTimeout(resolve, ANIMATION_SPEEDS[animationSpeed]))
-
-      setCurrentStep(i)
-      setState({
-        board: newSteps[i].board,
-        queens: newSteps[i].queens,
-        currentRow: newSteps[i].row,
-        isComplete: newSteps[i].action === 'complete',
-        solutionCount: solutions.length,
-      })
-
-      if (!findAllSolutions && newSteps[i].action === 'complete') {
-        break
+      
+      if (!animationCancelled) {
+        setIsAnimating(false)
+        setIsPaused(false)
+        isPausedRef.current = false
       }
     }
 
-    setIsAnimating(false)
+    // Store cancel function
+    const cancelAnimation = () => {
+      animationCancelled = true
+      setIsAnimating(false)
+      setIsPaused(false)
+      isPausedRef.current = false
+    }
+    
+    animationCancelRef.current = cancelAnimation
+    animate()
   }, [boardSize, isAnimating, animationSpeed, createBoard, solveNQueensRecursive, isPaused])
 
   const reset = useCallback(() => {
-    if (isAnimating) return
+    // Cancel any running animation
+    if (animationCancelRef.current) {
+      animationCancelRef.current()
+    }
+    
+    setIsAnimating(false)
+    setIsPaused(false)
+    isPausedRef.current = false
+    
     setState({
       board: createBoard(boardSize),
       queens: [],
@@ -196,22 +245,31 @@ export function useNQueens(boardSize: number = 8) {
     setCurrentStep(-1)
     setAllSolutions([])
     setCurrentSolutionIndex(0)
-    setIsPaused(false)
-  }, [boardSize, isAnimating, createBoard])
+  }, [boardSize, createBoard])
 
   const showSolution = useCallback((index: number) => {
     if (index >= 0 && index < allSolutions.length) {
       setCurrentSolutionIndex(index)
-      setState(prev => ({
-        ...prev,
-        queens: allSolutions[index],
+      const solutionQueens = allSolutions[index]
+      const newBoard = createBoard(boardSize)
+      
+      // Place queens on the board for the selected solution
+      solutionQueens.forEach(queen => {
+        newBoard[queen.row][queen.col] = 1
+      })
+      
+      setState({
+        board: newBoard,
+        queens: solutionQueens,
+        currentRow: boardSize - 1,
         isComplete: true,
-      }))
+        solutionCount: allSolutions.length,
+      })
     }
-  }, [allSolutions])
+  }, [allSolutions, boardSize, createBoard])
 
   const stepForward = useCallback(() => {
-    if (currentStep < steps.length - 1) {
+    if (currentStep < steps.length - 1 && !isAnimating) {
       const nextStep = currentStep + 1
       setCurrentStep(nextStep)
       setState({
@@ -222,10 +280,10 @@ export function useNQueens(boardSize: number = 8) {
         solutionCount: allSolutions.length,
       })
     }
-  }, [currentStep, steps, allSolutions.length])
+  }, [currentStep, steps, allSolutions.length, isAnimating])
 
   const stepBackward = useCallback(() => {
-    if (currentStep > 0) {
+    if (currentStep > 0 && !isAnimating) {
       const prevStep = currentStep - 1
       setCurrentStep(prevStep)
       setState({
@@ -236,7 +294,7 @@ export function useNQueens(boardSize: number = 8) {
         solutionCount: allSolutions.length,
       })
     }
-  }, [currentStep, steps, allSolutions.length])
+  }, [currentStep, steps, allSolutions.length, isAnimating])
 
   const checkSafe = useCallback((row: number, col: number) => {
     return isSafe(state.board, row, col, state.board.length)
@@ -291,8 +349,19 @@ export function useNQueens(boardSize: number = 8) {
     return { ok: true as const }
   }, [isAnimating, state.board, state.queens])
 
-  const pause = useCallback(() => { if (isAnimating) setIsPaused(true) }, [isAnimating])
-  const resume = useCallback(() => { if (isAnimating) setIsPaused(false) }, [isAnimating])
+  const pause = useCallback(() => { 
+    if (isAnimating) {
+      setIsPaused(true)
+      isPausedRef.current = true
+    }
+  }, [isAnimating])
+  
+  const resume = useCallback(() => { 
+    if (isAnimating) {
+      setIsPaused(false)
+      isPausedRef.current = false
+    }
+  }, [isAnimating])
 
   return {
     state,

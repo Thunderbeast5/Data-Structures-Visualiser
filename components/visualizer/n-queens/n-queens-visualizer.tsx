@@ -94,19 +94,28 @@ export function NQueensVisualizer({ content }: NQueensVisualizerProps) {
     reset()
   }
 
-  // Idle hint: suggest next move repeatedly until acted upon; includes backtracking action; stops when solved
+  // Hint system that triggers immediately after difficulty selection
   useEffect(() => {
     if (!interactive || isAnimating) return
-    if (state.queens.length === boardSize) return // solved, no hints
+    if (state.queens.length === boardSize) {
+      // Solution completed - show congratulations
+      setHelperMsg(`🎉 Congratulations! You've solved the ${boardSize}-Queens puzzle!`)
+      return
+    }
 
-    const IDLE_MS = difficulty === "beginner" ? 10000 : difficulty === "intermediate" ? 30000 : 45000
+    const IDLE_MS = difficulty === "beginner" ? 10000 : difficulty === "intermediate" ? 20000 : 40000
+    let timeoutId: NodeJS.Timeout
 
-    const interval = setInterval(() => {
-      // Recompute a suggestion each interval based on current state
+    const showHint = () => {
+      // Check if still in interactive mode and not solved
+      if (!interactive || isAnimating || state.queens.length === boardSize) return
+      
+      // Recompute a suggestion based on current state
       const row = state.queens.length < boardSize ? state.queens.length : boardSize - 1
       let suggestionCol: number | null = null
+      
       for (let col = 0; col < boardSize; col++) {
-        if (state.board[row][col] === 0 && checkSafe(row, col)) {
+        if (state.board[row] && state.board[row][col] === 0 && checkSafe(row, col)) {
           suggestionCol = col
           break
         }
@@ -118,14 +127,15 @@ export function NQueensVisualizer({ content }: NQueensVisualizerProps) {
           difficulty === "advanced"
             ? `In row ${row + 1}, consider a column that is not aligned with any existing queen and avoids both diagonals.`
             : `Try placing a queen at row ${row + 1}, column ${colChar}.`
+        
         if (difficulty === "advanced") {
           toast({
-            title: "Hint",
+            title: "💡 Hint",
             description,
           })
         } else {
           toast({
-            title: "Hint",
+            title: "💡 Hint",
             description,
             action: (
               <ToastAction altText="Place queen"
@@ -139,6 +149,7 @@ export function NQueensVisualizer({ content }: NQueensVisualizerProps) {
           })
         }
       } else {
+        // Need to backtrack
         if (state.queens.length > 0) {
           const last = state.queens[state.queens.length - 1]
           const lastCol = String.fromCharCode(65 + last.col)
@@ -146,14 +157,15 @@ export function NQueensVisualizer({ content }: NQueensVisualizerProps) {
             difficulty === "advanced"
               ? `Current row has no safe squares. Think about reversing your previous choice in row ${last.row + 1}.`
               : `No safe move in current row. Consider backtracking: remove the queen at ${last.row + 1}${lastCol}.`
+          
           if (difficulty === "advanced") {
             toast({
-              title: "Hint",
+              title: "💡 Hint",
               description,
             })
           } else {
             toast({
-              title: "Hint",
+              title: "💡 Hint",
               description,
               action: (
                 <ToastAction altText="Backtrack"
@@ -172,40 +184,68 @@ export function NQueensVisualizer({ content }: NQueensVisualizerProps) {
               ? `Row 1: choose a column that doesn't share a diagonal with your likely second-row choice.`
               : `Start by placing a queen in row 1 at a safe column (e.g., A or C).`
           toast({
-            title: "Hint",
+            title: "💡 Hint",
             description,
           })
         }
       }
-    }, IDLE_MS)
+      
+      // Schedule next hint
+      timeoutId = setTimeout(showHint, IDLE_MS)
+    }
 
-    // Reset interval whenever queens change or conditions change
-    return () => clearInterval(interval)
-  }, [interactive, isAnimating, state.queens, state.board, boardSize, checkSafe, placeQueen, removeQueen, toast, difficulty])
+    // Start the hint timer immediately after difficulty selection
+    timeoutId = setTimeout(showHint, IDLE_MS)
+
+    // Cleanup function
+    return () => {
+      if (timeoutId) clearTimeout(timeoutId)
+    }
+  }, [interactive, isAnimating, state.queens.length, boardSize, difficulty, checkSafe, placeQueen, removeQueen, toast])
 
   const attackedSquares = useMemo(() => showAttacked ? getAttackedSquares(state.queens, boardSize) : new Set<string>(), [showAttacked, state.queens, boardSize, getAttackedSquares])
   const currentPosition = steps[currentStep] ? { row: steps[currentStep].row, col: steps[currentStep].col } : undefined
 
   const handleSquareClick = (row: number, col: number) => {
-    if (!interactive) return
+    if (!interactive || isAnimating) return
+    
     if (state.board[row][col] === 1) {
       const res = removeQueen(row, col)
       if (!res.ok) setHelperMsg(res.reason)
       else setHelperMsg(`Removed queen from ${row + 1}${String.fromCharCode(65 + col)}`)
       return
     }
+    
     if (!checkSafe(row, col)) {
-      setHelperMsg(`Unsafe: conflicts with another queen.`)
+      setHelperMsg(`❌ Unsafe: This position conflicts with another queen.`)
       return
     }
+    
     const res = placeQueen(row, col)
-    if (!res.ok) setHelperMsg(res.reason)
-    else setHelperMsg(`Placed queen at ${row + 1}${String.fromCharCode(65 + col)}. Queens placed: ${state.queens.length + 1}`)
+    if (!res.ok) {
+      setHelperMsg(res.reason)
+    } else {
+      const newQueenCount = state.queens.length + 1
+      if (newQueenCount === boardSize) {
+        // Check if this completes a valid solution
+        setTimeout(() => {
+          setHelperMsg(`🎉 Congratulations! You've successfully solved the ${boardSize}-Queens puzzle!`)
+        }, 100)
+      } else {
+        setHelperMsg(`✅ Placed queen at ${row + 1}${String.fromCharCode(65 + col)}. Queens placed: ${newQueenCount}/${boardSize}`)
+      }
+    }
   }
 
   const validateBoard = () => {
     const queens = state.queens
     const n = boardSize
+    
+    if (queens.length === 0) {
+      setHelperMsg(`No queens placed yet. Start by clicking on any square in the first row.`)
+      return
+    }
+    
     // Check conflicts pairwise
     for (let i = 0; i < queens.length; i++) {
       for (let j = i + 1; j < queens.length; j++) {
@@ -215,15 +255,16 @@ export function NQueensVisualizer({ content }: NQueensVisualizerProps) {
         const sameCol = a.col === b.col
         const sameDiag = Math.abs(a.row - b.row) === Math.abs(a.col - b.col)
         if (sameRow || sameCol || sameDiag) {
-          setHelperMsg(`Invalid: Queens at ${a.row + 1}${String.fromCharCode(65 + a.col)} and ${b.row + 1}${String.fromCharCode(65 + b.col)} are attacking.`)
+          setHelperMsg(`❌ Invalid: Queens at ${a.row + 1}${String.fromCharCode(65 + a.col)} and ${b.row + 1}${String.fromCharCode(65 + b.col)} are attacking each other.`)
           return
         }
       }
     }
+    
     if (queens.length === n) {
-      setHelperMsg(`Valid solution! All ${n} queens placed with no conflicts.`)
+      setHelperMsg(`🎉 Perfect! Valid solution with all ${n} queens placed safely.`)
     } else {
-      setHelperMsg(`So far so good. ${queens.length}/${n} queens placed. Continue placing without conflicts.`)
+      setHelperMsg(`✅ Looking good! ${queens.length}/${n} queens placed with no conflicts. Keep going!`)
     }
   }
 
@@ -360,22 +401,50 @@ export function NQueensVisualizer({ content }: NQueensVisualizerProps) {
                   ) : (
                     <div className="space-y-2">
                       <div className="flex items-center justify-between">
-                        <Badge variant="outline">Queens placed: {state.queens.length}/{boardSize}</Badge>
+                        <Badge variant={state.queens.length === boardSize ? "default" : "outline"}>
+                          Queens placed: {state.queens.length}/{boardSize}
+                          {state.queens.length === boardSize && " ✓"}
+                        </Badge>
                       </div>
                       <div className="flex gap-2">
-                        <Button onClick={validateBoard} className="flex-1">
+                        <Button onClick={validateBoard} className="flex-1" disabled={state.queens.length === 0}>
                           Validate
                         </Button>
                         <Button onClick={reset} variant="outline" className="flex-1">
                           Clear
                         </Button>
                       </div>
+                      
+                      {/* Auto-solve controls for interactive mode */}
+                      <div className="flex gap-2">
+                        <Button 
+                          onClick={() => solve(false)}
+                          disabled={isAnimating || state.queens.length === boardSize}
+                          variant="secondary"
+                          className="flex-1"
+                        >
+                          <Play className="w-4 h-4 mr-2" />
+                          Auto-Solve
+                        </Button>
+                        {isAnimating && (
+                          <Button 
+                            onClick={isPaused ? resume : pause} 
+                            variant="outline" 
+                            className="flex-1"
+                          >
+                            {isPaused ? (
+                              <><PlayCircle className="w-4 h-4 mr-2" /> Resume</>
+                            ) : (
+                              <><Pause className="w-4 h-4 mr-2" /> Pause</>
+                            )}
+                          </Button>
+                        )}
+                      </div>
                     </div>
                   )}
 
                   <Button 
                     onClick={reset}
-                    disabled={isAnimating}
                     variant="outline"
                     className="w-full"
                   >
@@ -394,7 +463,10 @@ export function NQueensVisualizer({ content }: NQueensVisualizerProps) {
                   <CardContent className="space-y-4">
                     <div className="flex items-center justify-between">
                       <Button
-                        onClick={stepBackward}
+                        onClick={() => {
+                          console.log('Step backward clicked, currentStep:', currentStep, 'steps.length:', steps.length)
+                          stepBackward()
+                        }}
                         disabled={currentStep <= 0 || isAnimating}
                         variant="outline"
                         size="sm"
@@ -403,11 +475,14 @@ export function NQueensVisualizer({ content }: NQueensVisualizerProps) {
                       </Button>
                       
                       <Badge variant="outline">
-                        {currentStep + 1} / {steps.length}
+                        {Math.max(0, currentStep + 1)} / {steps.length}
                       </Badge>
                       
                       <Button
-                        onClick={stepForward}
+                        onClick={() => {
+                          console.log('Step forward clicked, currentStep:', currentStep, 'steps.length:', steps.length)
+                          stepForward()
+                        }}
                         disabled={currentStep >= steps.length - 1 || isAnimating}
                         variant="outline"
                         size="sm"
@@ -435,7 +510,10 @@ export function NQueensVisualizer({ content }: NQueensVisualizerProps) {
                     {allSolutions.length > 1 && (
                       <div className="flex items-center justify-between">
                         <Button
-                          onClick={() => showSolution(currentSolutionIndex - 1)}
+                          onClick={() => {
+                            console.log('Previous solution clicked, currentIndex:', currentSolutionIndex, 'allSolutions.length:', allSolutions.length)
+                            showSolution(currentSolutionIndex - 1)
+                          }}
                           disabled={currentSolutionIndex <= 0 || isAnimating}
                           variant="outline"
                           size="sm"
@@ -448,7 +526,10 @@ export function NQueensVisualizer({ content }: NQueensVisualizerProps) {
                         </span>
                         
                         <Button
-                          onClick={() => showSolution(currentSolutionIndex + 1)}
+                          onClick={() => {
+                            console.log('Next solution clicked, currentIndex:', currentSolutionIndex, 'allSolutions.length:', allSolutions.length)
+                            showSolution(currentSolutionIndex + 1)
+                          }}
                           disabled={currentSolutionIndex >= allSolutions.length - 1 || isAnimating}
                           variant="outline"
                           size="sm"
