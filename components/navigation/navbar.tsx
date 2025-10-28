@@ -86,11 +86,11 @@ const featureList: FeatureProps[] = [
     description: "Learn how to multiply polynomials using a stack.",
     url: "/visualizer/polynomial"
   },
-  {
-    title: "Huffman Coding",
-    description: "Learn how to encode and decode messages using a Huffman tree.",
-    url: "/visualizer/huffman"
-  },
+  // {
+  //   title: "Huffman Coding",
+  //   description: "Learn how to encode and decode messages using a Huffman tree.",
+  //   url: "/visualizer/huffman"
+  // },
   {
     title: "Dijkstra's Algorithm",
     description: "Learn how to find the shortest path between nodes in a graph using Dijkstra's algorithm.",

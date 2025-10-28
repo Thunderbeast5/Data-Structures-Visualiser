@@ -57,7 +57,7 @@ const sections = {
     {
       name: "Message Queue",
       description: "Simulate message queuing systems with producers and consumers. Visualize message flow.",
-      href: "/visualizer/queue-applications",
+      href: "/",
       icon: MessageSquare,
     },
     {
@@ -66,12 +66,12 @@ const sections = {
       href: "/visualizer/polynomial",
       icon: Calculator,
     },
-    {
-      name: "Huffman Coding",
-      description: "Huffman coding is a popular data compression technique that creates variable-length prefix codes based on the frequency of characters in the input text.",
-      href: "/visualizer/huffman",
-      icon: Hash,
-    },
+    // {
+    //   name: "Huffman Coding",
+    //   description: "Huffman coding is a popular data compression technique that creates variable-length prefix codes based on the frequency of characters in the input text.",
+    //   href: "/visualizer/huffman",
+    //   icon: Hash,
+    // },
     {
       name: "Dijkstra's Algorithm",
       description: "Visualize Dijkstra's algorithm to find the shortest path in a graph.",

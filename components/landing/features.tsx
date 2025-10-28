@@ -61,12 +61,12 @@ const features = [
     image: "/ds-polynomial-multiplication.png",
     url: "/visualizer/polynomial"
   },
-  {
-    title: "Huffman Coding",
-    description: "Huffman coding is a popular data compression technique that creates variable-length prefix codes based on the frequency of characters in the input text.",
-    image: "/ds-huffman.png",
-    url: "/visualizer/huffman"
-  },
+  // {
+  //   title: "Huffman Coding",
+  //   description: "Huffman coding is a popular data compression technique that creates variable-length prefix codes based on the frequency of characters in the input text.",
+  //   image: "/ds-huffman.png",
+  //   url: "/visualizer/huffman"
+  // },
   {
     title: "Dijkstra's Algorithm",
     description: "Dijkstra's algorithm is a popular algorithm for finding the shortest path between nodes in a graph.",

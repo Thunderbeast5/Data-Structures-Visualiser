@@ -67,7 +67,7 @@ const dataStructures = [
 const applications = [
   {
     name: "Message Queue",
-    url: "/visualizer/queue-applications",
+    url: "/",
     icon: MessageSquare,
     description: "Asynchronous message processing system with producers and consumers",
   },
@@ -83,12 +83,12 @@ const applications = [
     icon: X,
     description: "Multiply two polynomials using linked lists",
   },
-  {
-    name: "Huffman Coding",
-    url: "/visualizer/huffman",
-    icon: Hash,
-    description: "Huffman coding is a popular data compression technique that creates variable-length prefix codes based on the frequency of characters in the input text.",
-  },
+  // {
+  //   name: "Huffman Coding",
+  //   url: "/visualizer/huffman",
+  //   icon: Hash,
+  //   description: "Huffman coding is a popular data compression technique that creates variable-length prefix codes based on the frequency of characters in the input text.",
+  // },
   {
     name: "Dijkstra's Algorithm",
     url: "/visualizer/dijkstra",

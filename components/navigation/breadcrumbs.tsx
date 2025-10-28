@@ -58,10 +58,10 @@ const routes = {
     name: "Heap",
     path: "/visualizer/heap",
   },
-  "/visualizer/huffman": {
-    name: "Huffman Coding",
-    path: "/visualizer/huffman",
-  },
+  // "/visualizer/huffman": {
+  //   name: "Huffman Coding",
+  //   path: "/visualizer/huffman",
+  // },
   "/visualizer/dijkstra": {
     name: "Dijkstra's Algorithm",
     path: "/visualizer/dijkstra",
