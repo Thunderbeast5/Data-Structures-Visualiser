@@ -6,6 +6,7 @@ import { MarkdownContent } from "@/components/shared/markdown-content"
 import { HeapSortControls } from "./heap-sort-controls"
 import { HeapSortDisplay } from "./heap-sort-display"
 import { HeapSortCodeHighlight } from "./heap-sort-code-highlight"
+import { HeapSortCodeTemplate } from "./heap-sort-code-template"
 import { useHeapSort } from "@/hooks/use-heap-sort"
 
 interface HeapSortVisualizerProps {
@@ -39,16 +40,17 @@ export function HeapSortVisualizer({ content }: HeapSortVisualizerProps) {
     <div className="container mx-auto">
       <div className="mb-6">
         <h1 className="text-3xl font-bold tracking-tight">
-          Heap Sort Visualization
+          Heap Sort Algorithm
         </h1>
         <p className="text-muted-foreground">
-          Watch how heap sort works by building a max heap and repeatedly extracting the maximum element.
+          Interactive visualization of the heap sort algorithm. Watch the step-by-step process of building a max heap and extracting elements to create a sorted array.
         </p>
       </div>
 
       <Tabs defaultValue="visualization" className="w-full space-y-6">
-        <TabsList className="grid w-full grid-cols-2">
+        <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="visualization">Visualization</TabsTrigger>
+          <TabsTrigger value="code-template">Code Template</TabsTrigger>
           <TabsTrigger value="explanation">Explanation</TabsTrigger>
         </TabsList>
         
@@ -87,6 +89,10 @@ export function HeapSortVisualizer({ content }: HeapSortVisualizerProps) {
               />
             </div>
           </div>
+        </TabsContent>
+        
+        <TabsContent value="code-template" className="space-y-6">
+          <HeapSortCodeTemplate />
         </TabsContent>
         
         <TabsContent value="explanation" className="prose prose-invert max-w-none">
