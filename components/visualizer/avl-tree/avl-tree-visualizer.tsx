@@ -2,6 +2,7 @@
 
 import { AVLTreeControls } from "@/components/visualizer/avl-tree/avl-tree-controls"
 import { AVLTreeDisplay } from "@/components/visualizer/avl-tree/avl-tree-display"
+import { AVLTreeCodeTemplate } from "@/components/visualizer/avl-tree/avl-tree-code-template"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { MarkdownContent } from "@/components/shared/markdown-content"
 import { useAVLTree } from "@/hooks/use-avl-tree"
@@ -48,12 +49,17 @@ export function AVLTreeVisualizer({ content }: AVLTreeVisualizerProps) {
         </p>
       </div>
 
-      <Tabs defaultValue="visualization" className="w-full space-y-6">
-        <TabsList className="grid w-full grid-cols-3">
+      <Tabs defaultValue="code-template" className="w-full space-y-6">
+        <TabsList className="grid w-full grid-cols-4">
+          <TabsTrigger value="code-template">Code</TabsTrigger>
           <TabsTrigger value="visualization">Visualization</TabsTrigger>
           <TabsTrigger value="analysis">Analysis</TabsTrigger>
           <TabsTrigger value="explanation">Explanation</TabsTrigger>
         </TabsList>
+        
+        <TabsContent value="code-template" className="space-y-6">
+          <AVLTreeCodeTemplate />
+        </TabsContent>
         
         <TabsContent value="visualization" className="space-y-6">
           <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">

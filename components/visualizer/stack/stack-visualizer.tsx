@@ -3,6 +3,7 @@
 import { StackControls } from "@/components/visualizer/stack/stack-controls"
 import { StackDisplay } from "@/components/visualizer/stack/stack-display"
 import { StackOperations } from "@/components/visualizer/stack/stack-operations"
+import { StackCodeTemplate } from "@/components/visualizer/stack/stack-code-template"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { MarkdownContent } from "@/components/shared/markdown-content"
 import { useStack } from "@/hooks/use-stack"
@@ -33,11 +34,16 @@ export function StackVisualizer({ content }: StackVisualizerProps) {
         </p>
       </div>
 
-      <Tabs defaultValue="visualization" className="w-full space-y-6">
-        <TabsList className="grid w-full grid-cols-2">
+      <Tabs defaultValue="code-template" className="w-full space-y-6">
+        <TabsList className="grid w-full grid-cols-3">
+          <TabsTrigger value="code-template">Code</TabsTrigger>
           <TabsTrigger value="visualization">Visualization</TabsTrigger>
           <TabsTrigger value="explanation">Explanation</TabsTrigger>
         </TabsList>
+        
+        <TabsContent value="code-template" className="space-y-6">
+          <StackCodeTemplate />
+        </TabsContent>
         
         <TabsContent value="visualization" className="space-y-6">
           <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">

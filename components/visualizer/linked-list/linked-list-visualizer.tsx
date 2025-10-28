@@ -5,6 +5,7 @@ import { MarkdownContent } from "@/components/shared/markdown-content"
 import { LinkedListDisplay } from "@/components/visualizer/linked-list/linked-list-display"
 import { LinkedListControls } from "@/components/visualizer/linked-list/linked-list-controls"
 import { LinkedListOperations } from "@/components/visualizer/linked-list/linked-list-operations"
+import { LinkedListCodeTemplate } from "@/components/visualizer/linked-list/linked-list-code-template"
 import { useLinkedList } from "@/hooks/use-linked-list"
 import { ListType } from "./types"
 
@@ -29,8 +30,9 @@ export function LinkedListVisualizer({ content }: LinkedListVisualizerProps) {
         </p>
       </div>
 
-      <Tabs defaultValue="SLL" className="w-full space-y-6">
-        <TabsList className="grid w-full grid-cols-5">
+      <Tabs defaultValue="code-template" className="w-full space-y-6">
+        <TabsList className="grid w-full grid-cols-6">
+          <TabsTrigger value="code-template">Code</TabsTrigger>
           {LIST_TYPES.map(type => (
             <TabsTrigger key={type.value} value={type.value}>
               {type.label}
@@ -38,6 +40,10 @@ export function LinkedListVisualizer({ content }: LinkedListVisualizerProps) {
           ))}
           <TabsTrigger value="explanation">Info</TabsTrigger>
         </TabsList>
+
+        <TabsContent value="code-template" className="space-y-6">
+          <LinkedListCodeTemplate />
+        </TabsContent>
 
         {LIST_TYPES.map(type => (
           <TabsContent key={type.value} value={type.value} className="space-y-6">

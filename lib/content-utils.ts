@@ -31,6 +31,7 @@ export function getAvailableDataStructures(): string[] {
     'binary-tree',
     'avl-tree',
     'heap',
+    'heap-sort',
     'linked-list',
     'stack-applications',
     'queue-applications',

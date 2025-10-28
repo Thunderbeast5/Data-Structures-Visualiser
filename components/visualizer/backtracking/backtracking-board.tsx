@@ -38,12 +38,16 @@ export function BacktrackingBoard({
     
     // Current position gets priority
     if (isCurrentPosition(row, col)) {
-      if (currentStep?.action === 'place') {
-        return "bg-green-400 animate-pulse" // Valid placement
+      if (currentStep?.action === 'move') {
+        return "bg-green-400 animate-pulse" // Valid move
       } else if (currentStep?.action === 'check' && currentStep?.isValid === false) {
         return "bg-red-400 animate-pulse" // Invalid placement
-      } else if (currentStep?.action === 'remove' || currentStep?.action === 'backtrack') {
+      } else if (currentStep?.action === 'backtrack') {
         return "bg-orange-400 animate-pulse" // Backtracking
+      } else if (currentStep?.action === 'blocked') {
+        return "bg-red-400 animate-pulse" // Blocked path
+      } else if (currentStep?.action === 'complete') {
+        return "bg-green-500 animate-pulse" // Solution found
       }
       return "bg-yellow-400 animate-pulse" // General current position
     }
@@ -123,9 +127,11 @@ export function BacktrackingBoard({
               {/* Step indicator */}
               {isCurrentPosition(row, col) && currentStep && (
                 <div className="absolute -top-2 -right-2 w-4 h-4 bg-blue-500 rounded-full text-xs text-white flex items-center justify-center font-bold">
-                  {currentStep.action === 'place' ? '+' : 
-                   currentStep.action === 'remove' ? '-' : 
-                   currentStep.action === 'check' ? '?' : '•'}
+                  {currentStep.action === 'move' ? '+' : 
+                   currentStep.action === 'backtrack' ? '-' : 
+                   currentStep.action === 'check' ? '?' : 
+                   currentStep.action === 'blocked' ? 'X' :
+                   currentStep.action === 'complete' ? '✓' : '•'}
                 </div>
               )}
             </motion.div>

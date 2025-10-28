@@ -1,5 +1,5 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { BrainCircuit, Binary, TreePine, Box, List, ArrowLeftRight, Calculator, MessageSquare, Hash, ArrowRightLeft, Crown, GitBranch } from "lucide-react"
+import { BrainCircuit, Binary, TreePine, Box, List, ArrowLeftRight, Calculator, MessageSquare, Hash, ArrowRightLeft, Crown, GitBranch, BarChart3 } from "lucide-react"
 import Link from "next/link"
 
 const sections = {
@@ -83,6 +83,12 @@ const sections = {
       description: "Solve the classic N-Queens problem using backtracking. Watch the algorithm place queens on a chessboard.",
       href: "/visualizer/n-queens",
       icon: Crown,
+    },
+    {
+      name: "Heap Sort",
+      description: "Step-by-step visualization of heap sort algorithm. Watch how max heap is built and elements are extracted to create sorted array.",
+      href: "/visualizer/heap-sort",
+      icon: BarChart3,
     },
   ]
 }

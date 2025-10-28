@@ -3,6 +3,7 @@
 import { BinaryTreeControls } from "./binary-tree-controls"
 import { BinaryTreeDisplay } from "./binary-tree-display"
 import { BinaryTreeAnalysis } from "./binary-tree-analysis"
+import { BinaryTreeCodeTemplate } from "./binary-tree-code-template"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { MarkdownContent } from "@/components/shared/markdown-content"
 import { useBinaryTree } from "@/hooks/use-binary-tree"
@@ -40,12 +41,17 @@ export function BinaryTreeVisualizer({ content }: BinaryTreeVisualizerProps) {
 
   return (
     <div className="container mx-auto">
-      <Tabs defaultValue="visualization" className="w-full space-y-6">
-        <TabsList className="grid w-full grid-cols-3">
+      <Tabs defaultValue="code-template" className="w-full space-y-6">
+        <TabsList className="grid w-full grid-cols-4">
+          <TabsTrigger value="code-template">Code</TabsTrigger>
           <TabsTrigger value="visualization">Visualization</TabsTrigger>
           <TabsTrigger value="analysis">Analysis</TabsTrigger>
           <TabsTrigger value="explanation">Explanation</TabsTrigger>
         </TabsList>
+        
+        <TabsContent value="code-template" className="space-y-6">
+          <BinaryTreeCodeTemplate />
+        </TabsContent>
         
         <TabsContent value="visualization" className="space-y-6">
           <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
